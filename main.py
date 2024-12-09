@@ -2,8 +2,8 @@ import streamlit as st
 from PIL import Image
 import torch
 import torchvision.transforms as transforms
+import gdown
 import numpy as np
-import torch.nn.functional as F
 
 # Định nghĩa danh sách các lớp
 class_list = {
@@ -51,18 +51,25 @@ class_list = {
     '41': 'End of no passing',
     '42': 'End of no passing by vehicles over 3.5 metric tons'
 }
+
 # Tiêu đề ứng dụng
 st.title('DETECT TRAFFIC SIGNS')
 
-# Load mô hình đã lưu
-model = torch.load('vgg16_model.pth') 
+# Tải mô hình từ Google Drive
+# Thay 'your_file_id' bằng ID file thực tế từ Google Drive
+file_id = 'your_file_id'  # ID của mô hình trong Google Drive
+url = f'https://drive.google.com/uc?id={https://drive.google.com/file/d/1WwEhL-Nru3mYSo80ya4Nz00gv8-3TRhK/view?usp=drive_link}'
+gdown.download(url, 'vgg16_model.pth', quiet=False)
+
+# Load mô hình đã tải xuống
+model = torch.load('vgg16_model.pth')
 model.eval()
 
 # Định nghĩa các phép biến đổi cần thiết cho hình ảnh
 transform = transforms.Compose([
-    transforms.Resize((50, 50),  
+    transforms.Resize((50, 50)),  # Resize ảnh về kích thước chuẩn
     transforms.ToTensor(),  # Chuyển ảnh thành tensor
-    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])  # Chuẩn hóa ảnh
 ])
 
 # Hiển thị giao diện tải ảnh
@@ -77,14 +84,14 @@ if image is not None:
 
     if st.button('Predict'):
         # Tiền xử lý ảnh
-        image_tensor = transform(image).unsqueeze(0)  
+        image_tensor = transform(image).unsqueeze(0)  # Thêm một chiều batch
 
         # Dự đoán
-        with torch.no_grad(): 
+        with torch.no_grad():  # Không tính toán gradient trong quá trình đánh giá
             output = model(image_tensor)
-            _, predicted = torch.max(output, 1)  
+            _, predicted = torch.max(output, 1)  # Lấy lớp có xác suất cao nhất
 
         # Hiển thị kết quả
         st.header('Result')
-        label = str(predicted.item()) 
-        st.text(class_list[label])  
+        label = str(predicted.item())  # Lấy giá trị label
+        st.text(class_list[label])  # Hiển thị nhãn kết quả (tên biển báo)
