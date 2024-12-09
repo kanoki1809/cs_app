@@ -55,12 +55,6 @@ class_list = {
 # Tiêu đề ứng dụng
 st.title('DETECT TRAFFIC SIGNS')
 
-# Tải mô hình từ Google Drive
-# Thay 'your_file_id' bằng ID file thực tế từ Google Drive
-file_id = 'your_file_id'  # ID của mô hình trong Google Drive
-url = f'https://drive.google.com/uc?id={https://drive.google.com/file/d/1WwEhL-Nru3mYSo80ya4Nz00gv8-3TRhK/view?usp=drive_link}'
-gdown.download(url, 'vgg16_model.pth', quiet=False)
-
 # Load mô hình đã tải xuống
 model = torch.load('vgg16_model.pth')
 model.eval()
